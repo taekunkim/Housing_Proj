@@ -3,6 +3,7 @@ Auto Email Sender
 
 This script allows the user to easily send an email.
 """
+
 try:
     import yagmail
     from yagmail.validate import validate_email_with_regex
@@ -44,12 +45,15 @@ def __check_overloaded():
 
     return False
 
-def send_email(to, subject, content, ip_address, priority=False):
+def send_email(to, subject, content, ip_address, cc=None, bcc=None, attachments=None, priority=False):
     """
-    :param to: recipient's email address in string or a list of string addresses
-    :param subject: subject of email
-    :param content: email body text
-    :param ip_address: ip address of the user using this function
+    :param to: a string or a list of strings of recipient's address(es)
+    :param subject: a string of the subject of the email
+    :param content: a string of the body text of the email
+    :param ip_address: a string of the ip address of the user
+    :param cc: a string or a list of strings of cc address(es)
+    :param bcc: a string or alist of strings of bcc address(es)
+    :param attachments: a string or a list of strings of file directory
     :param priority: boolean value; if True, suppresses exception
     :return: True if email was successfully sent, False if not
 
@@ -63,7 +67,18 @@ def send_email(to, subject, content, ip_address, priority=False):
         isinstance(subject, str),
         isinstance(content, str),
         isinstance(ip_address, str),
+        isinstance(cc, (type(None), str, list)),
+        isinstance(bcc, (type(None), str, list)),
+        isinstance(attachments, (type(None), str, list)),
+        isinstance(priority, bool)
     ])
+
+    for argument in [cc, bcc, attachments]:
+        if isinstance(argument, list):
+            if all(isinstance(item, str) for item in argument):
+                pass
+            else:
+                argument_type_check = False
 
     if not argument_type_check:
         raise ValueError('Invalid parameter type')
@@ -77,6 +92,6 @@ def send_email(to, subject, content, ip_address, priority=False):
             raise FunctionAbusedError('Function has been used too much in the last minute')
 
     # send email
-    response = yag.send(to, subject, content)  # automatically validates format of addresses contained in "to"
+    response = yag.send(to, subject, content, cc=cc, bcc=bcc, attachments=attachments)  # automatically validates format of addresses contained in "to"
     return response != False
     
