@@ -1,5 +1,5 @@
 import unittest
-from app.util.auto_email import auto_email
+from app.util import auto_email
 
 
 class Test(unittest.TestCase):
